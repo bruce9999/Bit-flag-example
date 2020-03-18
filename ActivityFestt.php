@@ -32,8 +32,8 @@ class ActivityFest {
 		}
 		return false;
 	}
-	
-	
+
+
 
 	// *** USER FUNCTIONS *** //
 
@@ -53,7 +53,7 @@ class ActivityFest {
 	}
 
 	// *** PRIZE FUNCTIONS *** //
-	
+
 
 	public static function dayFlag($day_id) {
 		if (array_key_exists($day_id, self::$day_flags) && self::$day_flags[$day_id]) {
@@ -73,6 +73,14 @@ class ActivityFest {
 			}
 			$day_flag = self::dayFlag($day_id);
 
+			//determine if user already has day flag
+
+            $sql = "SELECT username FROM Activityfest WHERE username = '{$username}' AND year = '" . self::getYear() . "' AND day_flag & {$day_flag}";
+            $res =  mysql("", $sql);
+            if (mysql_num_rows($res) > 0) {
+                return false;
+            }
+
 			$ok = true;
 			$trans = array();
 			$trans[] = "UPDATE Activityfest SET day_flags = day_flags | {$day_flag} WHERE username = '{$username}' AND year = '" . self::getYear() . "' AND (day_flags & {$day_flag} = 0)";
@@ -81,7 +89,7 @@ class ActivityFest {
 				$day_prize = array_rand($day_prize);
 			}
 			if (NPItems::give_item($username, $day_prize, &$trans)) $ok = false;
-			
+
 			if ($ok) {
 				$res = mysql("", $trans);
 				return $res;
@@ -117,7 +125,7 @@ class ActivityFest {
 		15 => "2017-10-01 14:00",
 		16 => "2017-10-02 14:00",
 	);
-	
+
 	private static $prizes = array(
 		 1 => array(123, 124, 125, 126, 127,128),
 		 2 => 45960,
@@ -153,12 +161,12 @@ class ActivityFest {
 		14 => 0x2000,
 		15 => 0x4000,
 	);
-	
+
 	// The flag indicating that you got the final prize (a reward for getting the prize all 15 days).
 	private static $final_flag = 0x8000;
-	
 
-	
+
+
 
 }
 
